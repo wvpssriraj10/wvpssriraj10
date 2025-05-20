@@ -1,5 +1,5 @@
 # 💫 About Me:
-🎓 Computer Science undergrad at VIT-AP University<br>🏏 Passionate about sports analytics, especially cricket<br>📊 Skilled in data analysis, visualization, and automation<br>🛠️ Experienced in Python, Pandas, SQL, Excel, and PowerBI<br>💡 Enjoy solving real-world problems with tech-driven solutions<br>🌱 Currently learning full-stack development and data scraping<br>🤝 Open to collaborations in sports tech, analytics, and system design<br>🧠 Believe in "learning by building" — projects, solutions, and startups
+🎓 Computer Science undergrad at VIT-AP University<br>🏏 Passionate about sports analytics, especially cricket<br>📊 Skilled in data analysis & visualization <br>🛠️ Experienced in Python, Pandas, SQL, Excel, and PowerBI<br>💡 Enjoy solving real-world problems with tech-driven solutions<br>🌱 Currently learning full-stack development and data scraping<br>🤝 Open to collaborations in sports tech, analytics, and system design<br>🧠 Believe in "learning by building" — projects, solutions, and startups
 
 
 ## 🌐 Socials:
