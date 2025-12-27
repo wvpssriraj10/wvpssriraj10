@@ -3,7 +3,7 @@
 
 
 ## 🌐 Socials:
-[![Portfolio](https://img.shields.io/badge/:badgeContent?style=plastic&color=orange)](https://sriraj-portfolio.vercel.app/)
+[![Portfolio]([![Portfolio](https://img.shields.io/badge/Portfolio-Visit-orange?style=plastic&logo=google-chrome&logoColor=white)](https://sriraj-portfolio.vercel.app)
 [![Facebook](https://img.shields.io/badge/Facebook-%231877F2.svg?logo=Facebook&logoColor=white)](https://facebook.com/https://www.facebook.com/wvps.sriraj/) [![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?logo=Instagram&logoColor=white)](https://instagram.com/https://www.instagram.com/w.v.p.s.sriraj_10/) [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/https://www.linkedin.com/in/sriraj-w-v-p-s-2b2854280/) [![Pinterest](https://img.shields.io/badge/Pinterest-%23E60023.svg?logo=Pinterest&logoColor=white)](https://pinterest.com/https://in.pinterest.com/wvpssriraj10/) [![Quora](https://img.shields.io/badge/Quora-%23B92B27.svg?logo=Quora&logoColor=white)](https://quora.com/profile/https://www.quora.com/profile/W-V-P-S-SRIRAJ-10) [![X](https://img.shields.io/badge/X-black.svg?logo=X&logoColor=white)](https://x.com/https://x.com/Wsriraj) [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?logo=YouTube&logoColor=white)](https://youtube.com/@https://www.youtube.com/@w.v.p.ssriraj10) [![email](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white)](mailto:wsriraj10@gmail.com) 
 
 # 💻 Tech Stack:
