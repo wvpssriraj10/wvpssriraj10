@@ -1,6 +1,7 @@
 # 💫 About Me:
 🎓 Computer Science undergraduate focused on data-driven problem solving and analytical thinking.<br>🏏 Strong background in **cricket**, with real on-field experience shaping tactical awareness and decision-making.<br>📊 Deep interest in **sports analytics**, especially performance evaluation, match insights, and data-backed strategy.<br>🧩 Hands-on experience in data cleaning, exploration, visualization, and interpretation.<br>🧠 Proficient in Python, SQL, Pandas, Excel, and Power BI for analytical workflows.<br>📈 Experienced in building dashboards and insight-driven reports for performance evaluation.<br>🔍 Strong understanding of metrics, trends, and pattern recognition across sports and data domains.<br>⚙️ Approach centered on clarity, scalability, and real-world applicability.<br>🛠️ Learn through building, testing, and refining real projects rather than theory alone.<br>🚀 Actively developing expertise in analytics, system thinking, and applied machine learning.<br>🤝 Open to collaborations in data analytics, sports technology, and performance analysis.<br>
 
+![Uploading wvpssriraj10-space-shooter.gif…]()
 
 ## 🌐 Socials:
 [![Portfolio](https://img.shields.io/badge/Portfolio-Visit-orange?style=plastic&logo=google-chrome&logoColor=white)](https://sriraj-portfolio.vercel.app)
