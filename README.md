@@ -13,6 +13,5 @@
 ![](https://nirzak-streak-stats.vercel.app/?user=wvpssriraj10&theme=great-gatsby&hide_border=true)<br/>
 ![](https://github-readme-stats.vercel.app/api/top-langs/?username=wvpssriraj10&theme=great-gatsby&hide_border=true&include_all_commits=true&count_private=false&layout=compact)
 
-<img align="center" width="100%" src="gh-space-shooter.gif" />
 
 ---
