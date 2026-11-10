@@ -11,6 +11,47 @@
 <img src="./cards/graph.svg" width="100%" alt="Contribution graph for the last year, in green" />
 </div>
 
-<p align="center">
-<a href="https://sriraj-portfolio.vercel.app">portfolio</a> &nbsp;/&nbsp; <a href="https://www.linkedin.com/in/sriraj-w-v-p-s-2b2854280/">linkedin</a> &nbsp;/&nbsp; <a href="https://www.instagram.com/w.v.p.s.sriraj_10/">instagram</a> &nbsp;/&nbsp; <a href="https://x.com/Wsriraj">x</a> &nbsp;/&nbsp; <a href="https://www.youtube.com/@w.v.p.ssriraj10">youtube</a> &nbsp;/&nbsp; <a href="https://www.facebook.com/wvps.sriraj/">facebook</a> &nbsp;/&nbsp; <a href="https://in.pinterest.com/wvpssriraj10/">pinterest</a> &nbsp;/&nbsp; <a href="https://www.quora.com/profile/W-V-P-S-SRIRAJ-10">quora</a>
-</p>
+## About Me
+
+- Computer Science undergraduate focused on data-driven problem solving and analytical thinking.
+- I bring real on-field cricket experience to sports analytics, with an interest in performance evaluation, match insights, and tactical decision-making.
+- I work across data cleaning, exploration, visualization, and interpretation, building dashboards and reports that turn metrics and trends into practical insights.
+- My analytical toolkit includes Python, SQL, Pandas, Excel, and Power BI. I am developing further expertise in system thinking and applied machine learning by building and refining real projects.
+- Open to collaborations in data analytics, sports technology, and performance analysis.
+
+## Socials
+
+[![Facebook](https://img.shields.io/badge/Facebook-%231877F2.svg?logo=Facebook&logoColor=white)](https://www.facebook.com/wvps.sriraj/)
+[![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?logo=Instagram&logoColor=white)](https://www.instagram.com/w.v.p.s.sriraj_10/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/sriraj-w-v-p-s-2b2854280/)
+[![Pinterest](https://img.shields.io/badge/Pinterest-%23E60023.svg?logo=Pinterest&logoColor=white)](https://in.pinterest.com/wvpssriraj10/)
+[![Quora](https://img.shields.io/badge/Quora-%23B92B27.svg?logo=Quora&logoColor=white)](https://www.quora.com/profile/W-V-P-S-SRIRAJ-10)
+[![X](https://img.shields.io/badge/X-black.svg?logo=X&logoColor=white)](https://x.com/Wsriraj)
+[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?logo=YouTube&logoColor=white)](https://www.youtube.com/@w.v.p.ssriraj10)
+[![Email](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white)](mailto:wsriraj10@gmail.com)
+
+## Tech Stack
+
+![Python](https://img.shields.io/badge/python-%233776AB.svg?style=plastic&logo=python&logoColor=white)
+![SQL](https://img.shields.io/badge/SQL-%2300758F.svg?style=plastic&logo=postgresql&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-%23150458.svg?style=plastic&logo=pandas&logoColor=white)
+![C](https://img.shields.io/badge/c-%2300599C.svg?style=plastic&logo=c&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=plastic&logo=typescript&logoColor=white)
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=plastic&logo=openjdk&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=plastic&logo=javascript&logoColor=%23F7DF1E)
+![R](https://img.shields.io/badge/r-%23276DC3.svg?style=plastic&logo=r&logoColor=white)
+![Power BI](https://img.shields.io/badge/power_bi-F2C811?style=plastic&logo=powerbi&logoColor=black)
+![Excel](https://img.shields.io/badge/Excel-%23217346.svg?style=plastic&logo=microsoftexcel&logoColor=white)
+![Anaconda](https://img.shields.io/badge/Anaconda-%2344A833.svg?style=plastic&logo=anaconda&logoColor=white)
+![Render](https://img.shields.io/badge/Render-%2346E3B7.svg?style=plastic&logo=render&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=plastic&logo=Matplotlib&logoColor=black)
+![NumPy](https://img.shields.io/badge/NumPy-%23013243.svg?style=plastic&logo=numpy&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=plastic&logo=scikit-learn&logoColor=white)
+![Canva](https://img.shields.io/badge/Canva-%2300C4CC.svg?style=plastic&logo=Canva&logoColor=white)
+![Epic Games](https://img.shields.io/badge/Epic_Games-%23313131.svg?style=plastic&logo=epicgames&logoColor=white)
+
+## GitHub Stats
+
+![GitHub stats](https://github-readme-stats.vercel.app/api?username=wvpssriraj10&theme=default&show_icons=true&hide_border=true&count_private=true&cache_seconds=1800&title_color=0a8f63&text_color=3a3a3c&icon_color=0a8f63&bg_color=ffffff00)<br/>
+![Contribution streak](https://streak-stats.demolab.com/?user=wvpssriraj10&theme=default&hide_border=true&background=ffffff00&ring=0a8f63&fire=ffc81a&currStreakLabel=0a8f63)<br/>
+![Top languages](https://github-readme-stats.vercel.app/api/top-langs/?username=wvpssriraj10&theme=default&hide_border=true&layout=compact&cache_seconds=1800&title_color=0a8f63&text_color=3a3a3c&bg_color=ffffff00)
