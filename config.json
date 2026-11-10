@@ -1,7 +1,7 @@
 {
   "user": "wvpssriraj10",
   "name": "W V P S Sriraj",
-  "kicker": "CRICKET · DATA · SPORTS ANALYTICS",
+  "kicker": "CS UNDERGRAD · CRICKET ANALYTICS",
   "tagline": "CS undergraduate with real on-field cricket experience, turning match data into data-backed strategy.",
   "status": "Open to collaborations",
   "chips": [
@@ -14,21 +14,30 @@
   "portrait": "assets/portrait.jpg",
   "tiles": [
     {
-      "label": "Portfolio",
-      "sub": "Projects and internships",
-      "icon": "briefcase",
+      "label": "PORTFOLIO",
+      "line1": "Projects &",
+      "line2": "internships",
+      "sub": "sriraj-portfolio.vercel.app",
+      "color": "brand",
+      "fg": "#ffffff",
       "href": "https://sriraj-portfolio.vercel.app"
     },
     {
-      "label": "LinkedIn",
-      "sub": "Let's connect",
-      "icon": "person",
+      "label": "LINKEDIN",
+      "line1": "Let's",
+      "line2": "connect",
+      "sub": "in/sriraj-w-v-p-s",
+      "color": "ink",
+      "fg": "#ffffff",
       "href": "https://www.linkedin.com/in/sriraj-w-v-p-s-2b2854280/"
     },
     {
-      "label": "Email",
+      "label": "EMAIL",
+      "line1": "Say",
+      "line2": "hello",
       "sub": "wsriraj10@gmail.com",
-      "icon": "mail",
+      "color": "amber",
+      "fg": "#111111",
       "href": "mailto:wsriraj10@gmail.com"
     }
   ],
@@ -51,30 +60,50 @@
     }
   ],
   "theme": {
-    "_note": "PLACEHOLDER palette. Replace with the exact values from your website's CSS.",
-    "bg": "#0B1220",
-    "surface": "#111B2E",
-    "border": "#22304A",
-    "text": "#E8EEF8",
-    "muted": "#8FA0BC",
-    "brand": "#2DD4A7"
+    "_note": "Light palette in the style of the reference profile. Replace brand with your site's accent colour.",
+    "page": "#ffffff",
+    "card": "#f3f3f1",
+    "ink": "#111111",
+    "body": "#3a3a3c",
+    "muted": "#6e6e73",
+    "faint": "#dcdcd7",
+    "empty": "#e2e2de",
+    "brand": "#0a8f63",
+    "amber": "#ffc81a"
   },
   "fonts": {
-    "_note": "PLACEHOLDER fonts. Point url at the TTF your website uses (variable or static).",
+    "_note": "Serif display + sans body + mono labels. Point url at your site's TTFs if different.",
     "display": {
-      "family": "Space Grotesk",
-      "weight": 700,
-      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf"
+      "family": "Instrument Serif",
+      "weight": 400,
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/instrumentserif/InstrumentSerif-Regular.ttf"
+    },
+    "displayi": {
+      "family": "Instrument Serif",
+      "weight": 400,
+      "style": "italic",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/instrumentserif/InstrumentSerif-Italic.ttf"
     },
     "body": {
-      "family": "Space Grotesk",
+      "family": "Geist",
       "weight": 400,
-      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf"
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/geist/Geist%5Bwght%5D.ttf"
+    },
+    "bodyb": {
+      "family": "Geist",
+      "weight": 600,
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/geist/Geist%5Bwght%5D.ttf"
     },
     "mono": {
-      "family": "JetBrains Mono",
-      "weight": 500,
-      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf"
+      "family": "Geist Mono",
+      "weight": 400,
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/geistmono/GeistMono%5Bwght%5D.ttf"
+    }
+  },
+  "section_titles": {
+    "work": {
+      "plain": "Featured ",
+      "italic": "work"
     }
   }
 }

@@ -33,7 +33,8 @@ STATIC = os.environ.get("STATIC") == "1"
 OUT = ROOT / "preview" / "cards" if STATIC else ROOT / "cards"
 CACHE = ROOT / ".font-cache"
 
-W = 830
+W = 880
+GAP = 12  # vertical breathing room baked into every card, so README needs no spacing
 T = CFG["theme"]
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 LANG_COLORS = {
@@ -62,10 +63,11 @@ class Face:
         self.key = key
         self.family = spec["family"]
         self.weight = spec["weight"]
+        self.style = spec.get("style", "normal")
         CACHE.mkdir(exist_ok=True)
         raw = CACHE / (hashlib.sha1(spec["url"].encode()).hexdigest()[:12] + ".ttf")
         if not raw.exists():
-            print(f"  downloading {spec['family']} …")
+            print(f"  downloading {spec['family']} {self.style} …")
             req = urllib.request.Request(spec["url"], headers={"User-Agent": "profile-cards"})
             raw.write_bytes(urllib.request.urlopen(req, timeout=60).read())
         font = TTFont(raw)
@@ -122,8 +124,8 @@ def load_fonts():
             FACES[key] = Face(key, spec)
 
 
-GENERIC = {"display": "system-ui,sans-serif", "body": "system-ui,sans-serif",
-           "mono": "ui-monospace,Menlo,Consolas,monospace"}
+GENERIC = {"display": "Georgia,serif", "displayi": "Georgia,serif", "body": "system-ui,sans-serif",
+           "bodyb": "system-ui,sans-serif", "mono": "ui-monospace,Menlo,Consolas,monospace"}
 
 
 def fit(face, text, size, maxw, minsize=10, track=0.0):
@@ -160,17 +162,15 @@ def wrap(face, text, size, maxw, max_lines):
 
 # ───────────────────────── card scaffold ─────────────────────────
 KEYFRAMES = """
-@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
 @keyframes fade{from{opacity:0}}
 @keyframes grow{from{transform:scaleY(0)}}
-@keyframes sweep{from{transform:scaleX(0)}}
 @keyframes pop{from{opacity:0;transform:scale(.4)}}
 @keyframes draw{from{stroke-dashoffset:var(--len)}}
-.rise,.fade,.grow,.sweep,.pop,.draw{animation-duration:.8s;animation-timing-function:cubic-bezier(.2,.7,.2,1);animation-fill-mode:both;animation-delay:var(--d,0s)}
+.rise,.fade,.grow,.pop,.draw{animation-duration:.8s;animation-timing-function:cubic-bezier(.2,.7,.2,1);animation-fill-mode:both;animation-delay:var(--d,0s)}
 .rise{animation-name:rise}
 .fade{animation-name:fade;animation-duration:.5s}
 .grow{animation-name:grow;transform-box:fill-box;transform-origin:50% 100%}
-.sweep{animation-name:sweep;transform-box:fill-box;transform-origin:0 50%}
 .pop{animation-name:pop;transform-box:fill-box;transform-origin:50% 50%}
 .draw{animation-name:draw;animation-duration:1.4s;stroke-dasharray:var(--len)}
 .still{display:none}
@@ -197,7 +197,7 @@ class Card:
     def add(self, s):
         self.body.append(s)
 
-    def text(self, x, y, s, face, size, fill, anchor="start", track=0.0, kind=None, t=0.0, opacity=None):
+    def text_m(self, x, y, s, face, size, fill, anchor="start", track=0.0, kind=None, t=0.0, opacity=None):
         for ch in s:
             if not FACES[face].has(ch):
                 print(f"  warn: {face} font lacks {ch!r} in card {self.name}")
@@ -206,8 +206,23 @@ class Card:
         tr = f' letter-spacing="{track}"' if track else ""
         op = f' fill-opacity="{opacity}"' if opacity is not None else ""
         at = self.anim(kind, t, face) if kind else f' class="{face}"'
-        self.add(f'<text x="{x:g}" y="{y:g}" font-size="{size:g}" fill="{fill}"{a}{tr}{op}{at}>'
-                 f'{html.escape(s, quote=False)}</text>')
+        return (f'<text x="{x:g}" y="{y:g}" font-size="{size:g}" fill="{fill}"{a}{tr}{op}{at}>'
+                f'{html.escape(s, quote=False)}</text>')
+
+    def text(self, *a, **k):
+        self.add(self.text_m(*a, **k))
+
+    def runs(self, x, y, parts, kind=None, t=0.0, track=0.0):
+        """Several faces/sizes on one baseline, as tspans inside ONE <text> so the browser
+        does the spacing: parts = [(text, face, size, fill), …]."""
+        spans = []
+        for n, (s, face, size, fill) in enumerate(parts):
+            self.chars[face] |= set(s)
+            dx = f' dx="{size * 0.22:g}"' if n else ""
+            spans.append(f'<tspan class="{face}" font-size="{size:g}" fill="{fill}"{dx}>'
+                         f'{html.escape(s.strip(), quote=False)}</tspan>')
+        tr = f' letter-spacing="{track}"' if track else ""
+        self.add(f'<text x="{x:g}" y="{y:g}"{tr}{self.anim(kind, t) if kind else ""}>{"".join(spans)}</text>')
 
     def live(self, animated, still=""):
         """SMIL can't be turned off by CSS, so the animated copy is hidden under
@@ -216,25 +231,26 @@ class Card:
             return still
         return f'<g class="smil">{animated}</g><g class="still">{still}</g>'
 
-    def panel(self, rx=18):
-        self.add(f'<rect x=".5" y=".5" width="{self.w - 1}" height="{self.h - 1}" rx="{rx}" '
-                 f'fill="{T["surface"]}" stroke="{T["border"]}"/>')
+    def panel(self, x=0, w=None, h=None, fill=None, rx=14):
+        w = w if w is not None else self.w - 2 * x
+        h = h if h is not None else self.h - GAP
+        self.add(f'<rect x="{x}" y="0" width="{w}" height="{h}" rx="{rx}" fill="{fill or T["card"]}"/>')
 
     def svg(self):
         css = "text{font-kerning:normal}"
         for key, face in FACES.items():
             if self.chars[key]:
                 b64 = face.woff_b64("".join(self.chars[key]))
-                css += (f"@font-face{{font-family:'SR {key}';font-weight:{face.weight};"
+                css += (f"@font-face{{font-family:'SR {key}';font-weight:{face.weight};font-style:{face.style};"
                         f"src:url(data:font/woff;base64,{b64}) format('woff')}}")
-            css += f".{key}{{font-family:'SR {key}',{GENERIC[key]};font-weight:{face.weight}}}"
+            css += (f".{key}{{font-family:'SR {key}',{GENERIC[key]};font-weight:{face.weight};"
+                    f"font-style:{face.style}}}")
         if not STATIC:
             css += KEYFRAMES
         title = html.escape(self.label, quote=True)
-        return (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
-                f'width="{self.w}" height="{self.h}" viewBox="0 0 {self.w} {self.h}" role="img" '
-                f'aria-label="{title}"><title>{title}</title><style>{css}</style>'
-                f'<defs>{"".join(self.defs)}</defs>{"".join(self.body)}</svg>')
+        return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{self.w}" height="{self.h}" '
+                f'viewBox="0 0 {self.w} {self.h}" role="img" aria-label="{title}"><title>{title}</title>'
+                f'<style>{css}</style><defs>{"".join(self.defs)}</defs>{"".join(self.body)}</svg>')
 
     def save(self):
         OUT.mkdir(parents=True, exist_ok=True)
@@ -244,7 +260,8 @@ class Card:
 
 
 # Cards play top to bottom: each card starts a little after the one above it.
-START = {"hero": 0.0, "tile": 0.55, "chart": 1.15, "repo": 1.9, "graph": 3.2}
+START = {"hero": 0.0, "tile": 0.6, "chart": 1.2, "title": 1.9, "repo": 2.1, "graph": 3.4}
+
 
 # ───────────────────────── data ─────────────────────────
 def fdate(d):
@@ -295,23 +312,23 @@ def monthly(days):
     return [(k, sums[k]) for k in keys]
 
 
-# ───────────────────────── icons (24×24 grid, stroked) ─────────────────────────
-ICONS = {
-    "briefcase": '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',
-    "person": '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
-    "mail": '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
-}
+def arrow(x, y, color, size=1.0):
+    return (f'<path transform="translate({x:g},{y:g}) scale({size:g})" d="M0 11L11 0M3 0h8v8" fill="none" '
+            f'stroke="{color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>')
+
+
 STAR = "M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"
 
 
-def icon(name, x, y, scale, color):
-    return (f'<g transform="translate({x:g},{y:g}) scale({scale:g})" fill="none" stroke="{color}" '
-            f'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{ICONS[name]}</g>')
-
-
-def arrow(x, y, color):
-    return (f'<path transform="translate({x:g},{y:g})" d="M0 11L11 0M3 0h8v8" fill="none" stroke="{color}" '
-            f'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>')
+def kicker(c, x, y, s, t=0.0, dot=False):
+    """Small uppercase mono caption; optional live accent square before it."""
+    if dot:
+        sq = f'<rect x="{x}" y="{y - 8}" width="8" height="8" rx="2" fill="{T["brand"]}"/>'
+        pulse = (f'<rect x="{x}" y="{y - 8}" width="8" height="8" rx="2" fill="{T["brand"]}">'
+                 f'<animate attributeName="opacity" values="1;.25;1" dur="2.2s" repeatCount="indefinite"/></rect>')
+        c.add(f'<g{c.anim("fade", t)}>{c.live(pulse, sq)}</g>')
+        x += 18
+    c.text(x, y, s, "mono", 12, T["muted"], track=1.0, kind="fade", t=t)
 
 
 # ───────────────────────── cards ─────────────────────────
@@ -333,236 +350,255 @@ def portrait_uri():
         return f"data:{mime};base64," + base64.b64encode(p.read_bytes()).decode()
 
 
+def ball(cx, cy, rotate):
+    """A cricket ball: white disc, two rows of accent stitches. Optionally spinning (SMIL)."""
+    spin = ('<animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="90s" '
+            'repeatCount="indefinite"/>' if rotate else "")
+    return (f'<g transform="translate({cx},{cy})"><g>{spin}'
+            f'<circle r="140" fill="#ffffff"/><circle r="140" fill="none" stroke="{T["faint"]}"/>'
+            f'<path d="M-62 -124Q-24 0 -62 124M62 -124Q24 0 62 124" fill="none" stroke="{T["brand"]}" '
+            f'stroke-width="3.5" stroke-linecap="round" stroke-dasharray="1 9"/>'
+            f'<path d="M-44 -132Q-8 0 -44 132M44 -132Q8 0 44 132" fill="none" stroke="{T["faint"]}" '
+            f'stroke-width="1.5"/></g></g>')
+
+
 def card_hero():
-    H = 282
-    c = Card("hero", W, H, START["hero"], f'{CFG["name"]}: {CFG["tagline"]}')
-    brand = T["brand"]
+    H = 440
+    c = Card("hero", W, H, START["hero"], f'{CFG["name"]}. {CFG["tagline"]}')
+    brand, ink = T["brand"], T["ink"]
     c.defs.append(
-        f'<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{T["bg"]}"/>'
-        f'<stop offset="1" stop-color="{T["surface"]}"/></linearGradient>'
-        f'<radialGradient id="glow"><stop offset="0" stop-color="{brand}" stop-opacity=".30"/>'
-        f'<stop offset="1" stop-color="{brand}" stop-opacity="0"/></radialGradient>'
-        f'<linearGradient id="shine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/>'
-        f'<stop offset=".5" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>'
-        f'<clipPath id="clip"><rect width="{W}" height="{H}" rx="20"/></clipPath>'
-        f'<clipPath id="pc"><circle cx="{W - 124}" cy="{H // 2}" r="76"/></clipPath>')
-    c.add(f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="20" fill="url(#bg)" stroke="{T["border"]}"/>')
-    glow_still = f'<circle cx="{W - 120}" cy="30" r="260" fill="url(#glow)" opacity=".85"/>'
-    glow_anim = (f'<circle cx="{W - 120}" cy="30" r="260" fill="url(#glow)"><animate attributeName="opacity" '
-                 f'values=".6;1;.6" dur="7s" repeatCount="indefinite"/></circle>')
-    c.add(f'<g clip-path="url(#clip)">{c.live(glow_anim, glow_still)}')
-    c.add(c.live(f'<rect x="-200" y="0" width="160" height="{H}" fill="url(#shine)" transform="skewX(-18)">'
-                 f'<animate attributeName="x" values="-200;-200;1000" keyTimes="0;.7;1" dur="10s" begin="1.8s" '
-                 f'repeatCount="indefinite"/></rect>'))
-    c.add("</g>")
+        f'<linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="600" y2="0">'
+        f'<stop offset="0" stop-color="{ink}"/><stop offset=".42" stop-color="{ink}"/>'
+        f'<stop offset=".5" stop-color="{brand}"/><stop offset=".58" stop-color="{ink}"/>'
+        f'<stop offset="1" stop-color="{ink}"/>'
+        f'<animateTransform attributeName="gradientTransform" type="translate" values="-600 0;600 0;600 0" '
+        f'keyTimes="0;.45;1" dur="7s" begin="1.6s" repeatCount="indefinite"/></linearGradient>'
+        f'<clipPath id="pc"><circle cx="700" cy="{(H - GAP) // 2}" r="128"/></clipPath>')
+    c.panel()
+    kicker(c, 48, 57, CFG["kicker"], t=0.0, dot=True)
 
     pic = portrait_uri()
-    text_w = W - 88 - (200 if pic else 0)
+    cy = (H - GAP) // 2
     if pic:
-        cx, cy = W - 124, H // 2
-        c.add(f'<g{c.anim("pop", 0.3)}><image href="{pic}" x="{cx - 76}" y="{cy - 76}" width="152" height="152" '
+        c.add(f'<g{c.anim("pop", 0.3)}><image href="{pic}" x="572" y="{cy - 128}" width="256" height="256" '
               f'clip-path="url(#pc)" preserveAspectRatio="xMidYMid slice"/></g>')
-        ln = 2 * 3.14159 * 84
+        ln = 2 * 3.14159 * 138
         ring = "" if STATIC else f' class="draw" style="--len:{ln:.0f}px;--d:{START["hero"] + .2:.2f}s"'
-        c.add(f'<g transform="rotate(-90 {cx} {cy})"><circle cx="{cx}" cy="{cy}" r="84" fill="none" stroke="{brand}" '
+        c.add(f'<g transform="rotate(-90 700 {cy})"><circle cx="700" cy="{cy}" r="138" fill="none" stroke="{brand}" '
               f'stroke-width="2"{ring}/></g>')
+    else:
+        c.add(f'<g{c.anim("fade", 0.3)}>{c.live(ball(700, cy, True), ball(700, cy, False))}</g>')
 
-    c.text(44, 64, CFG["kicker"], "mono", 12, brand, track=2.4, kind="rise", t=0.1)
-    name, nsize = fit("display", CFG["name"], 60, text_w, 34)
-    c.text(44, 64 + 14 + nsize * 0.8, name, "display", nsize, T["text"], kind="rise", t=0.25)
-    y = 64 + 14 + nsize * 0.8 + 38
-    for i, line in enumerate(wrap("body", CFG["tagline"], 19, text_w, 2)):
-        c.text(44, y + i * 27, line, "body", 19, T["muted"], kind="rise", t=0.5 + i * 0.12)
+    parts = CFG["name"].split()
+    first, last = (" ".join(parts[:-1]), parts[-1]) if len(parts) > 1 else ("", parts[0])
+    size = 116
+    for face, s in (("display", first), ("displayi", last)):
+        if s:
+            size = min(size, fit(face, s, size, 500, 60, -2.5)[1])
+    y1 = 168
+    if first:
+        c.text(44, y1, first, "display", size, ink, track=-2.5, kind="rise", t=0.15)
+    y2 = y1 + (104 if first else 0)
+    still = c.text_m(44, y2, last, "displayi", size, ink, track=-2.5, kind="rise", t=0.3)
+    anim = c.text_m(44, y2, last, "displayi", size, "url(#shine)", track=-2.5, kind="rise", t=0.3)
+    c.add(c.live(anim, still) if not STATIC else still)
 
-    # status pill with a pulsing dot, then skill chips
-    py = H - 62
+    ty = y2 + 50
+    for i, line in enumerate(wrap("body", CFG["tagline"], 18, 500, 2)):
+        c.text(48, ty + i * 26, line, "body", 18, T["body"], kind="rise", t=0.55 + i * 0.12)
+
+    py = H - GAP - 56
     st = CFG["status"]
-    sw = FACES["mono"].width(st, 12) + 52
-    c.add(f'<g{c.anim("rise", 0.85)}><rect x="44" y="{py}" width="{sw:.0f}" height="30" rx="15" fill="{brand}" '
-          f'fill-opacity=".12" stroke="{brand}" stroke-opacity=".45"/><circle cx="62" cy="{py + 15}" r="4" fill="{brand}"/>'
-          + c.live(f'<circle cx="62" cy="{py + 15}" r="4" fill="none" stroke="{brand}"><animate attributeName="r" '
-                   f'values="4;11" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" '
-                   f'values=".7;0" dur="2.4s" repeatCount="indefinite"/></circle>')
-          + "</g>")
-    c.text(76, py + 19.5, st, "mono", 12, T["text"], kind="rise", t=0.85)
-    x = 44 + sw + 12
+    sw = FACES["mono"].width(st, 12) + 48
+    dot = f'<circle cx="68" cy="{py + 17}" r="4" fill="{brand}"/>'
+    pulse = (f'<circle cx="68" cy="{py + 17}" r="4" fill="none" stroke="{brand}"><animate attributeName="r" '
+             f'values="4;11" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".7;0" '
+             f'dur="2.4s" repeatCount="indefinite"/></circle>')
+    c.add(f'<g{c.anim("rise", 0.85)}><rect x="48" y="{py}" width="{sw:.0f}" height="34" rx="17" fill="#ffffff"/>'
+          f'{dot}{c.live(pulse)}</g>')
+    c.text(82, py + 21.5, st, "mono", 12, ink, kind="rise", t=0.85)
+    x = 48 + sw + 10
     for i, chip in enumerate(CFG["chips"]):
-        cw = FACES["mono"].width(chip, 12) + 24
-        c.add(f'<g{c.anim("rise", 1.0 + i * 0.1)}><rect x="{x:.0f}" y="{py}" width="{cw:.0f}" height="30" rx="9" '
-              f'fill="{T["bg"]}" stroke="{T["border"]}"/></g>')
-        c.text(x + 12, py + 19.5, chip, "mono", 12, T["muted"], kind="rise", t=1.0 + i * 0.1)
+        cw = FACES["mono"].width(chip, 12) + 28
+        c.add(f'<g{c.anim("rise", 1.0 + i * 0.08)}><rect x="{x:.0f}" y="{py}" width="{cw:.0f}" height="34" rx="17" '
+              f'fill="none" stroke="{T["faint"]}"/></g>')
+        c.text(x + 14, py + 21.5, chip, "mono", 12, T["muted"], kind="rise", t=1.0 + i * 0.08)
         x += cw + 8
     return c
 
 
 def card_tile(i, tile):
-    w, h = 270, 112
-    c = Card(f"tile-{i + 1}", w, h, START["tile"] + i * 0.15, f'{tile["label"]}: {tile["sub"]}')
-    brand = T["brand"]
-    c.add(f'<g{c.anim("rise", 0)}><rect x=".5" y=".5" width="{w - 1}" height="{h - 1}" rx="16" fill="{T["surface"]}" '
-          f'stroke="{T["border"]}"/><circle cx="46" cy="56" r="26" fill="{brand}" fill-opacity=".12"/>'
-          f'{icon(tile["icon"], 28, 38, 1.5, brand)}{arrow(w - 36, 24, T["muted"])}</g>')
-    label, ls = fit("display", tile["label"], 21, 150, 14)
-    c.text(88, 54, label, "display", ls, T["text"], kind="rise", t=0.1)
-    sub, ss = fit("body", tile["sub"], 14, 162, 10)
-    c.text(88, 78, sub, "body", ss, T["muted"], kind="rise", t=0.2)
+    w, h = 286, 234
+    R = h - GAP
+    c = Card(f"tile-{i + 1}", w, h, START["tile"] + i * 0.15, f'{tile["label"].title()}: {tile["sub"]}')
+    fill = {"brand": T["brand"], "ink": T["ink"], "amber": T["amber"]}.get(tile["color"], tile["color"])
+    fg = tile.get("fg", "#ffffff")
+    c.defs.append(f'<clipPath id="card"><rect x="6" y="0" width="{w - 12}" height="{R}" rx="14"/></clipPath>'
+                  f'<linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/>'
+                  f'<stop offset=".5" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" '
+                  f'stop-opacity="0"/></linearGradient>')
+    shine = (f'<rect x="-120" y="-20" width="90" height="260" fill="url(#gl)" transform="skewX(-14)">'
+             f'<animate attributeName="x" values="-120;-120;380" keyTimes="0;.6;1" dur="9s" begin="{3.5 + i}s" '
+             f'repeatCount="indefinite"/></rect>')
+    c.add(f'<g{c.anim("rise", 0)}><g clip-path="url(#card)"><rect x="6" width="{w - 12}" height="{R}" fill="{fill}"/>'
+          f'<circle cx="236" cy="172" r="60" fill="none" stroke="{fg}" stroke-opacity=".3" stroke-width="2"/>'
+          f'{c.live(shine)}</g></g>')
+    c.text(30, 42, tile["label"], "mono", 12, fg, track=1.2, kind="fade", t=0.2, opacity=0.85)
+    c.add(f'<g{c.anim("rise", 0.25)}><path transform="translate({w - 44},30)" d="M0 6H14M9 1l5 5-5 5" fill="none" '
+          f'stroke="{fg}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>')
+    c.text(28, 112, tile["line1"], "display", 42, fg, track=-0.5, kind="rise", t=0.3)
+    c.text(28, 158, tile["line2"], "displayi", 42, fg, track=-0.5, kind="rise", t=0.4)
+    sub, ss = fit("body", tile["sub"], 14, w - 12 - 48, 10)
+    c.text(30, 198, sub, "body", ss, fg, kind="rise", t=0.5, opacity=0.85)
     return c
 
 
 def card_chart(days, st):
-    H = 360
-    c = Card("contributions", W, H, START["chart"], "Contributions per month, current streak, active days and busiest day")
-    brand = T["brand"]
+    H = 372
+    c = Card("contributions", W, H, START["chart"], f'{st["total"]} contributions in the last 12 months, by month, '
+             f'with current streak, active days and busiest day')
+    ink, muted, brand = T["ink"], T["muted"], T["brand"]
     c.panel()
-    c.text(30, 50, "Contributions per month", "display", 22, T["text"], kind="rise", t=0)
-    c.text(W - 30, 50, f'{st["total"]:,} in the last year', "mono", 12, T["muted"], anchor="end", kind="rise", t=0.05)
-
-    bw, gap = (W - 60 - 28) / 3, 14
-    boxes = [
-        ("CURRENT STREAK", f'{st["current"]} day' + ("" if st["current"] == 1 else "s"), f'longest {st["longest"]} days'),
-        ("ACTIVE DAYS", f'{st["active"]}', f'of {st["span"]} days · {round(100 * st["active"] / st["span"])}%'),
-        ("BUSIEST DAY", f'{st["busiest"][1]} contributions', fdate(st["busiest"][0])),
-    ]
-    for i, (lab, val, sub) in enumerate(boxes):
-        x = 30 + i * (bw + gap)
-        t0 = 0.15 + i * 0.12
-        c.add(f'<g{c.anim("rise", t0)}><rect x="{x:.1f}" y="72" width="{bw:.1f}" height="82" rx="12" fill="{T["bg"]}" '
-              f'stroke="{T["border"]}"/><rect x="{x:.1f}" y="72" width="3" height="82" rx="1.5" fill="{brand}"/></g>')
-        c.text(x + 18, 94, lab, "mono", 10.5, T["muted"], track=1.4, kind="rise", t=t0 + 0.05)
-        v, vs = fit("display", val, 26, bw - 36, 16)
-        c.text(x + 18, 126, v, "display", vs, T["text"], kind="rise", t=t0 + 0.1)
-        s, ss = fit("mono", sub, 11.5, bw - 36, 9)
-        c.text(x + 18, 144, s, "mono", ss, brand, kind="rise", t=t0 + 0.15)
+    kicker(c, 40, 58, "THE LAST 12 MONTHS ON GITHUB", t=0.0)
+    c.runs(38, 114, [(f'{st["total"]:,} ', "display", 52, ink), ("contributions", "displayi", 52, ink)],
+           kind="rise", t=0.1)
 
     months = monthly(days)
     top = max(v for _, v in months) or 1
-    base, maxh = 312, 118
-    x0, span = 30, W - 60
-    step = span / 12
-    barw = step * 0.56
-    for frac in (0.5, 1.0):
-        gy = base - maxh * frac
-        c.add(f'<line x1="{x0}" x2="{W - 30}" y1="{gy:.1f}" y2="{gy:.1f}" stroke="{T["border"]}" stroke-dasharray="3 5" '
-              f'stroke-opacity=".7"/>')
-    c.add(f'<line x1="{x0}" x2="{W - 30}" y1="{base}" y2="{base}" stroke="{T["border"]}"/>')
+    base, maxh, x0, area = 312, 140, 40, 540
+    step = area / 12
+    barw = step * 0.7
     peak = max(range(12), key=lambda i: months[i][1])
     for i, ((y, m), v) in enumerate(months):
         cx = x0 + step * i + step / 2
-        h = max(maxh * v / top, 2.5)
-        col = brand if i == peak else mix(T["surface"], brand, 0.5)
-        t0 = 0.45 + i * 0.06
-        c.add(f'<rect x="{cx - barw / 2:.1f}" y="{base - h:.1f}" width="{barw:.1f}" height="{h:.1f}" rx="4" fill="{col}"'
-              f'{c.anim("grow", t0)}/>')
-        if v:
-            c.text(cx, base - h - 7, str(v), "mono", 11, T["text"] if i == peak else T["muted"], anchor="middle",
-                   kind="fade", t=t0 + 0.4)
-        c.text(cx, base + 20, MONTHS[m - 1], "mono", 11, T["muted"], anchor="middle", kind="fade", t=t0)
-        if i == 0 or m == 1:
-            c.text(cx, base + 35, str(y), "mono", 10, T["muted"], anchor="middle", kind="fade", t=t0, opacity=0.6)
+        h = max(maxh * v / top, 4)
+        col = brand if i == peak else (ink if v else T["faint"])
+        t0 = 0.4 + i * 0.07
+        c.add(f'<rect x="{cx - barw / 2:.1f}" y="{base - h:.1f}" width="{barw:.1f}" height="{h:.1f}" rx="4" '
+              f'fill="{col}"{c.anim("grow", t0)}><title>{MONTHS[m - 1]} {y}: {v}</title></rect>')
+        c.text(cx, base + 24, MONTHS[m - 1], "mono", 11, muted, anchor="middle", kind="fade", t=t0)
+    if months[peak][1]:
+        cx = x0 + step * peak + step / 2
+        h = max(maxh * months[peak][1] / top, 4)
+        c.text(cx, base - h - 8, f"{months[peak][1]:,}", "mono", 12, ink, anchor="middle", kind="fade", t=1.4)
+
+    cur = st["current"]
+    rows = [
+        (str(cur), " day" + ("" if cur == 1 else "s"), f'CURRENT STREAK · LONGEST {st["longest"]}'),
+        (str(st["active"]), " active days", f'OF {st["span"]} · {round(100 * st["active"] / st["span"])}% OF THE YEAR'),
+        (str(st["busiest"][1]), " in a day", f'BUSIEST DAY · {fdate(st["busiest"][0]).upper()}'),
+    ]
+    sx = 632
+    for i, (num, unit, cap) in enumerate(rows):
+        top_y = 70 + i * 88
+        t0 = 0.5 + i * 0.18
+        c.runs(sx, top_y + 50, [(num, "display", 52, ink), (unit, "displayi", 24, muted)], kind="rise", t=t0)
+        cap, cs = fit("mono", cap, 11, W - 40 - sx, 8, 0.8)
+        c.text(sx + 2, top_y + 72, cap, "mono", cs, muted, track=0.8, kind="fade", t=t0 + 0.1)
+        if i:
+            c.add(f'<line x1="{sx}" x2="{W - 40}" y1="{top_y - 12}" y2="{top_y - 12}" stroke="{T["faint"]}"'
+                  f'{c.anim("fade", t0)}/>')
+    return c
+
+
+def card_title(light):
+    name = "title-work-light" if light else "title-work-dark"
+    c = Card(name, W, 84, START["title"], "Featured work")
+    t = CFG["section_titles"]["work"]
+    plain = T["ink"] if light else T["card"]
+    c.runs(40, 62, [(t["plain"], "display", 44, plain), (t["italic"], "displayi", 44, T["brand"])],
+           kind="rise", t=0)
     return c
 
 
 def card_repo(i, item, meta):
-    H = 148
+    w, h = 440, 210
+    R = h - GAP
     name = item["repo"]
-    c = Card(f"repo-{i + 1}", W, H, START["repo"] + i * 0.25, f'{name}: {item["description"]}')
+    c = Card(f"repo-{i + 1}", w, h, START["repo"] + i * 0.2, f'{name}: {item["description"]}')
     brand = T["brand"]
-    c.panel()
-    c.add(f'<rect x="0" y="22" width="4" height="{H - 44}" rx="2" fill="{brand}"{c.anim("grow", 0.1)}/>')
-    c.add(f'<g{c.anim("rise", 0.1)}><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18v15H6.5a1.5 1.5 0 0 0 0 3H18M5 4.5v15" '
-          f'transform="translate(30,26) scale(1.15)" fill="none" stroke="{brand}" stroke-width="1.8" '
-          f'stroke-linecap="round" stroke-linejoin="round"/></g>')
-    c.text(64, 46, name, "display", 22, T["text"], kind="rise", t=0.15)
-    c.add(f'<g{c.anim("rise", 0.2)}>{arrow(W - 52, 28, T["muted"])}</g>')
+    c.panel(x=6, w=w - 12, h=R)
+    c.add(f'<g{c.anim("rise", 0.05)}><rect x="30" y="34" width="8" height="8" rx="2" fill="{brand}"/></g>')
+    nm, ns = fit("bodyb", name, 18, w - 12 - 60 - 30, 12)
+    c.text(46, 43, nm, "bodyb", ns, T["ink"], kind="rise", t=0.1)
+    c.add(f'<g{c.anim("rise", 0.15)}>{arrow(w - 44, 30, T["muted"], 0.95)}</g>')
     desc = item.get("description") or meta.get("description") or ""
-    for k, line in enumerate(wrap("body", desc, 15, W - 64 - 44, 2)):
-        c.text(64, 76 + k * 22, line, "body", 15, T["muted"], kind="rise", t=0.3 + k * 0.1)
+    for k, line in enumerate(wrap("body", desc, 14, w - 12 - 60, 3)):
+        c.text(30, 80 + k * 22, line, "body", 14, T["body"], kind="rise", t=0.25 + k * 0.1)
 
-    x, my = 64, H - 24
+    x, my = 30, R - 22
     lang = meta.get("language")
     if lang:
-        col = LANG_COLORS.get(lang, brand)
-        c.add(f'<circle cx="{x + 5}" cy="{my - 4}" r="5" fill="{col}"{c.anim("pop", 0.5)}/>')
+        c.add(f'<circle cx="{x + 5}" cy="{my - 4}" r="5" fill="{LANG_COLORS.get(lang, brand)}"{c.anim("pop", 0.5)}/>')
         c.text(x + 17, my, lang, "mono", 12, T["muted"], kind="rise", t=0.5)
-        x += 17 + FACES["mono"].width(lang, 12) + 26
+        x += 17 + FACES["mono"].width(lang, 12) + 22
     if "stars" in meta:
-        c.add(f'<g{c.anim("rise", 0.55)}><path d="{STAR}" transform="translate({x},{my - 13}) scale(.62)" fill="none" '
+        c.add(f'<g{c.anim("rise", 0.55)}><path d="{STAR}" transform="translate({x},{my - 13}) scale(.6)" fill="none" '
               f'stroke="{T["muted"]}" stroke-width="2" stroke-linejoin="round"/></g>')
-        c.text(x + 20, my, str(meta["stars"]), "mono", 12, T["muted"], kind="rise", t=0.55)
-        x += 20 + FACES["mono"].width(str(meta["stars"]), 12) + 24
-    if "forks" in meta:
-        c.add(f'<g transform="translate({x},{my - 13}) scale(.62)" fill="none" stroke="{T["muted"]}" stroke-width="2" '
-              f'stroke-linecap="round"><g{c.anim("rise", 0.6)}><circle cx="6" cy="5" r="2.6"/><circle cx="18" cy="5" r="2.6"/>'
-              f'<circle cx="12" cy="20" r="2.6"/><path d="M6 8v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V8M12 13v4.4"/></g></g>')
-        c.text(x + 20, my, str(meta["forks"]), "mono", 12, T["muted"], kind="rise", t=0.6)
+        c.text(x + 19, my, str(meta["stars"]), "mono", 12, T["muted"], kind="rise", t=0.55)
     if meta.get("pushed_at"):
         d = dt.date.fromisoformat(meta["pushed_at"][:10])
-        c.text(W - 30, my, f"updated {fdate(d)}", "mono", 12, T["muted"], anchor="end", kind="rise", t=0.65, opacity=0.8)
+        c.text(w - 30, my, f"UPDATED {fdate(d).upper()}", "mono", 11, T["muted"], anchor="end", track=0.6,
+               kind="rise", t=0.6, opacity=0.8)
     return c
 
 
 def card_graph(days, st):
-    H = 218
+    H = 286
     c = Card("graph", W, H, START["graph"], f'Contribution graph: {st["total"]} contributions in the last year')
     brand = T["brand"]
     c.panel()
-    c.text(30, 46, "Contribution graph", "display", 22, T["text"], kind="rise", t=0)
-    c.text(W - 30, 46, f'{st["total"]:,} contributions in the last year', "mono", 12, T["muted"], anchor="end",
-           kind="rise", t=0.05)
+    c.runs(42, 62, [("Every day, ", "display", 34, T["ink"]), ("in green", "displayi", 34, brand)], kind="rise", t=0)
+    c.text(W - 42, 60, "REFRESHED DAILY", "mono", 12, T["muted"], anchor="end", track=1.0, kind="fade", t=0.1)
 
     first = days[0][0]
     sunday = first - dt.timedelta(days=(first.weekday() + 1) % 7)
     nz = sorted(v for _, v in days if v > 0)
     q = [nz[int(len(nz) * f)] for f in (0.25, 0.5, 0.75)] if nz else [1, 2, 3]
-    levels = [mix(T["surface"], T["border"], 0.55)] + [mix(T["surface"], brand, t) for t in (0.3, 0.52, 0.76, 1.0)]
+    levels = [T["empty"]] + [mix(T["empty"], brand, t) for t in (0.3, 0.55, 0.8, 1.0)]
 
     def level(v):
-        if v <= 0:
-            return 0
-        return 1 + sum(v > t for t in q)
+        return 0 if v <= 0 else 1 + sum(v > t for t in q)
 
-    pitch, cell, gx, gy = 14, 11, 62, 82
+    pitch, cell, gx, gy = 15, 12, 44, 112
     last_col = (days[-1][0] - sunday).days // 7
     last_label_col = -10
     for d, v in days:
         col, row = (d - sunday).days // 7, (d.weekday() + 1) % 7
         x, y = gx + col * pitch, gy + row * pitch
-        c.add(f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="2.5" fill="{levels[level(v)]}"'
+        c.add(f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="3" fill="{levels[level(v)]}"'
               f'{c.anim("fade", 0.15 + col * 0.022 + row * 0.01)}><title>{v} on {fdate(d)}</title></rect>')
         if d.day <= 7 and row == 0 and col - last_label_col >= 3 and col <= last_col - 2:
-            c.text(x, gy - 12, MONTHS[d.month - 1], "mono", 10.5, T["muted"], kind="fade", t=0.1 + col * 0.022)
+            c.text(x, gy - 12, MONTHS[d.month - 1], "mono", 11, T["muted"], kind="fade", t=0.1 + col * 0.022)
             last_label_col = col
-    for row, lab in ((1, "Mon"), (3, "Wed"), (5, "Fri")):
-        c.text(30, gy + row * pitch + 9, lab, "mono", 10, T["muted"], kind="fade", t=0.1)
 
-    # today's cell gets a soft pulse (SMIL, replaced by nothing under reduced motion)
     d = days[-1][0]
     tx, ty = gx + ((d - sunday).days // 7) * pitch, gy + ((d.weekday() + 1) % 7) * pitch
-    c.add(c.live(f'<rect x="{tx - 1.5}" y="{ty - 1.5}" width="{cell + 3}" height="{cell + 3}" rx="4" fill="none" '
-                 f'stroke="{brand}"><animate attributeName="opacity" values="0;1;0" dur="2.8s" begin="3.5s" '
+    c.add(c.live(f'<rect x="{tx - 2}" y="{ty - 2}" width="{cell + 4}" height="{cell + 4}" rx="4.5" fill="none" '
+                 f'stroke="{T["ink"]}"><animate attributeName="opacity" values="0;1;0" dur="2.8s" begin="3.8s" '
                  f'repeatCount="indefinite"/></rect>'))
 
-    ly = H - 22
-    lx = W - 30
-    c.text(lx, ly + 0.5, "More", "mono", 10.5, T["muted"], anchor="end", kind="fade", t=0.2)
-    lx -= FACES["mono"].width("More", 10.5) + 8
+    ly = H - GAP - 26
+    lx = W - 42
+    c.text(lx, ly + 1, "more", "mono", 11, T["muted"], anchor="end", kind="fade", t=0.2)
+    lx -= FACES["mono"].width("more", 11) + 10
     for lv in (4, 3, 2, 1, 0):
-        c.add(f'<rect x="{lx - cell}" y="{ly - 9}" width="{cell}" height="{cell}" rx="2.5" fill="{levels[lv]}"'
+        c.add(f'<rect x="{lx - cell}" y="{ly - 10}" width="{cell}" height="{cell}" rx="3" fill="{levels[lv]}"'
               f'{c.anim("fade", 0.2)}/>')
         lx -= cell + 4
-    c.text(lx - 4, ly + 0.5, "Less", "mono", 10.5, T["muted"], anchor="end", kind="fade", t=0.2)
+    c.text(lx - 6, ly + 1, "less", "mono", 11, T["muted"], anchor="end", kind="fade", t=0.2)
     return c
 
 
 # ───────────────────────── preview page (STATIC=1) ─────────────────────────
 def write_preview(files):
-    tiles = "\n".join(f'<img src="cards/{f}" width="32.5%">' for f in files if f.startswith("tile-"))
-    others = lambda pre: "\n".join(f'<img src="cards/{f}" width="100%">' for f in files if f.startswith(pre))
+    img = lambda f, w: f'<img src="cards/{f}" style="width:{w}%">'
+    row = lambda pre, w: "".join(img(f, w) for f in files if f.startswith(pre))
     page = f"""<!doctype html><meta charset="utf-8"><title>Profile cards: final frame</title>
-<style>body{{margin:0;background:#0d1117;display:flex;justify-content:center}}
-main{{width:{W}px;padding:24px 0;line-height:0}}img{{display:block;margin:0 0 14px}}
-p{{margin:0 0 14px;display:flex;gap:1.25%;line-height:0}}p img{{margin:0}}</style>
-<main>{others("hero")}<p>{tiles}</p>{others("contributions")}{others("repo-")}{others("graph")}</main>"""
+<style>body{{margin:0;background:{T["page"]};display:flex;justify-content:center}}
+main{{width:{W}px;padding:24px 0;line-height:0;font-size:0}}img{{display:inline-block;vertical-align:top}}</style>
+<main>{row("hero", 100)}<br>{row("tile-", 32.5)}<br>{row("contributions", 100)}<br>{row("title-work-light", 100)}<br>
+{row("repo-", 50)}<br>{row("graph", 100)}</main>"""
     (ROOT / "preview" / "index.html").write_text(page, encoding="utf-8")
 
 
@@ -574,7 +610,7 @@ def main():
     repos = load_repos()
     cards = [card_hero()]
     cards += [card_tile(i, t) for i, t in enumerate(CFG["tiles"])]
-    cards += [card_chart(days, st)]
+    cards += [card_chart(days, st), card_title(True), card_title(False)]
     cards += [card_repo(i, f, repos.get(f["repo"], {})) for i, f in enumerate(CFG["featured"])]
     cards += [card_graph(days, st)]
     if OUT.exists():
