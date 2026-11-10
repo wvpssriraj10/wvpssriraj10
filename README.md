@@ -50,8 +50,4 @@
 ![Canva](https://img.shields.io/badge/Canva-%2300C4CC.svg?style=plastic&logo=Canva&logoColor=white)
 ![Epic Games](https://img.shields.io/badge/Epic_Games-%23313131.svg?style=plastic&logo=epicgames&logoColor=white)
 
-## GitHub Stats
 
-![GitHub stats](https://github-readme-stats.vercel.app/api?username=wvpssriraj10&theme=default&show_icons=true&hide_border=true&count_private=true&cache_seconds=1800&title_color=0a8f63&text_color=3a3a3c&icon_color=0a8f63&bg_color=ffffff00)<br/>
-![Contribution streak](https://streak-stats.demolab.com/?user=wvpssriraj10&theme=default&hide_border=true&background=ffffff00&ring=0a8f63&fire=ffc81a&currStreakLabel=0a8f63)<br/>
-![Top languages](https://github-readme-stats.vercel.app/api/top-langs/?username=wvpssriraj10&theme=default&hide_border=true&layout=compact&cache_seconds=1800&title_color=0a8f63&text_color=3a3a3c&bg_color=ffffff00)
