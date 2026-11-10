@@ -1,0 +1,80 @@
+{
+  "user": "wvpssriraj10",
+  "name": "W V P S Sriraj",
+  "kicker": "CRICKET · DATA · SPORTS ANALYTICS",
+  "tagline": "CS undergraduate with real on-field cricket experience, turning match data into data-backed strategy.",
+  "status": "Open to collaborations",
+  "chips": [
+    "Python",
+    "SQL",
+    "Pandas",
+    "Power BI",
+    "Excel"
+  ],
+  "portrait": "assets/portrait.jpg",
+  "tiles": [
+    {
+      "label": "Portfolio",
+      "sub": "Projects and internships",
+      "icon": "briefcase",
+      "href": "https://sriraj-portfolio.vercel.app"
+    },
+    {
+      "label": "LinkedIn",
+      "sub": "Let's connect",
+      "icon": "person",
+      "href": "https://www.linkedin.com/in/sriraj-w-v-p-s-2b2854280/"
+    },
+    {
+      "label": "Email",
+      "sub": "wsriraj10@gmail.com",
+      "icon": "mail",
+      "href": "mailto:wsriraj10@gmail.com"
+    }
+  ],
+  "featured": [
+    {
+      "repo": "ipl-auction-player-study",
+      "description": "Cricket analytics dashboard on the gap between IPL auction prices and on-field performance, built on 16+ years of ball-by-ball data."
+    },
+    {
+      "repo": "cricket-iq-coach",
+      "description": "Analytics dashboard and coaching tool for cricket academies and teams to track sessions, players, drills and performance."
+    },
+    {
+      "repo": "CricSense",
+      "description": "Deep learning project that generates narrative summaries of cricket matches from ball-by-ball data using transformer models."
+    },
+    {
+      "repo": "SmartML",
+      "description": "End-to-end AutoML platform that turns raw CSV, Excel or JSON files into trained, benchmarked machine learning models."
+    }
+  ],
+  "theme": {
+    "_note": "PLACEHOLDER palette. Replace with the exact values from your website's CSS.",
+    "bg": "#0B1220",
+    "surface": "#111B2E",
+    "border": "#22304A",
+    "text": "#E8EEF8",
+    "muted": "#8FA0BC",
+    "brand": "#2DD4A7"
+  },
+  "fonts": {
+    "_note": "PLACEHOLDER fonts. Point url at the TTF your website uses (variable or static).",
+    "display": {
+      "family": "Space Grotesk",
+      "weight": 700,
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf"
+    },
+    "body": {
+      "family": "Space Grotesk",
+      "weight": 400,
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf"
+    },
+    "mono": {
+      "family": "JetBrains Mono",
+      "weight": 500,
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf"
+    }
+  }
+}

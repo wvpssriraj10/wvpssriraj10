@@ -1,0 +1,42 @@
+name: Refresh profile cards
+
+on:
+  schedule:
+    - cron: "17 1 * * *"      # daily
+  workflow_dispatch:
+  push:
+    paths: [cards.py, config.json, assets/**]
+
+permissions:
+  contents: write
+
+jobs:
+  cards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Refresh contribution + repo data
+        env:
+          GH_TOKEN: ${{ secrets.PROFILE_TOKEN || secrets.GITHUB_TOKEN }}
+        run: python fetch_data.py
+
+      # ---- the step to add to an existing workflow: render the cards and commit them ----
+      - name: Render cards and commit
+        run: |
+          python cards.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data cards
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "chore: refresh profile cards"
+            git push
+          fi
