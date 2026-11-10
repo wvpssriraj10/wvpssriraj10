@@ -465,7 +465,7 @@ def card_chart(days, st):
 
     months = monthly(days)
     top = max(v for _, v in months) or 1
-    base, maxh, x0, area = 312, 140, 40, 540
+    base, maxh, x0, area = 296, 128, 40, 540
     step = area / 12
     barw = step * 0.7
     peak = max(range(12), key=lambda i: months[i][1])
@@ -476,7 +476,17 @@ def card_chart(days, st):
         t0 = 0.4 + i * 0.07
         c.add(f'<rect x="{cx - barw / 2:.1f}" y="{base - h:.1f}" width="{barw:.1f}" height="{h:.1f}" rx="4" '
               f'fill="{col}"{c.anim("grow", t0)}><title>{MONTHS[m - 1]} {y}: {v}</title></rect>')
-        c.text(cx, base + 24, MONTHS[m - 1], "mono", 11, muted, anchor="middle", kind="fade", t=t0)
+        c.text(cx, base + 22, MONTHS[m - 1], "mono", 11, muted, anchor="middle", kind="fade", t=t0)
+
+    year_start = 0
+    while year_start < len(months):
+        year = months[year_start][0][0]
+        year_end = year_start
+        while year_end + 1 < len(months) and months[year_end + 1][0][0] == year:
+            year_end += 1
+        year_x = x0 + step * (year_start + year_end + 1) / 2
+        c.text(year_x, base + 46, str(year), "mono", 10, muted, anchor="middle", kind="fade", t=0.4)
+        year_start = year_end + 1
     if months[peak][1]:
         cx = x0 + step * peak + step / 2
         h = max(maxh * months[peak][1] / top, 4)
@@ -563,11 +573,15 @@ def card_graph(days, st):
     pitch, cell, gx, gy = 15, 12, 44, 112
     last_col = (days[-1][0] - sunday).days // 7
     last_label_col = -10
+    last_year = None
     for d, v in days:
         col, row = (d - sunday).days // 7, (d.weekday() + 1) % 7
         x, y = gx + col * pitch, gy + row * pitch
         c.add(f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="3" fill="{levels[level(v)]}"'
               f'{c.anim("fade", 0.15 + col * 0.022 + row * 0.01)}><title>{v} on {fdate(d)}</title></rect>')
+        if d.year != last_year:
+            c.text(x, gy - 28, str(d.year), "mono", 10, T["muted"], kind="fade", t=0.1 + col * 0.022)
+            last_year = d.year
         if d.day <= 7 and row == 0 and col - last_label_col >= 3 and col <= last_col - 2:
             c.text(x, gy - 12, MONTHS[d.month - 1], "mono", 11, T["muted"], kind="fade", t=0.1 + col * 0.022)
             last_label_col = col
