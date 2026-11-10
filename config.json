@@ -1,8 +1,8 @@
 {
   "user": "wvpssriraj10",
   "name": "W V P S Sriraj",
-  "kicker": "CS UNDERGRAD · CRICKET ANALYTICS",
-  "tagline": "CS undergraduate with real on-field cricket experience, turning match data into data-backed strategy.",
+  "kicker": "DATA SCIENCE AND ANALYTICS",
+  "tagline": "CS undergraduate with Transforming raw data into actionable insights, specializing in analytics and data visualization",
   "status": "Open to collaborations",
   "chips": [
     "Python",
@@ -43,20 +43,20 @@
   ],
   "featured": [
     {
-      "repo": "ipl-auction-player-study",
-      "description": "Cricket analytics dashboard on the gap between IPL auction prices and on-field performance, built on 16+ years of ball-by-ball data."
-    },
-    {
-      "repo": "cricket-iq-coach",
-      "description": "Analytics dashboard and coaching tool for cricket academies and teams to track sessions, players, drills and performance."
-    },
-    {
-      "repo": "CricSense",
-      "description": "Deep learning project that generates narrative summaries of cricket matches from ball-by-ball data using transformer models."
+      "repo": "PVIntelligence",
+      "description": "AI-driven solar forecasting using time-series models, transfer learning, and explainable AI to predict photovoltaic generation at new sites with limited data."
     },
     {
       "repo": "SmartML",
-      "description": "End-to-end AutoML platform that turns raw CSV, Excel or JSON files into trained, benchmarked machine learning models."
+      "description": "End-to-end AutoML platform for data cleaning, model benchmarking, AI-powered insights, and deployable machine-learning exports."
+    },
+    {
+      "repo": "LeakFinder",
+      "description": "Decision-support platform that identifies negative-margin pricing, order delays, ad-spend leakage, and stockout risk across enterprise data."
+    },
+    {
+      "repo": "FactGuard-GenAI",
+      "description": "Multi-agent fact-checking framework based on DeepMind's SAFE to detect and mitigate LLM hallucinations at the claim level."
     }
   ],
   "theme": {

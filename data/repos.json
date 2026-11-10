@@ -1,30 +1,30 @@
 {
- "ipl-auction-player-study": {
-  "description": "Data-driven cricket analytics dashboard decoding the gap between IPL auction prices and on-field reality using 16+ years of ball-by-ball data to calculate objective player ROI.",
-  "language": "JavaScript",
-  "stars": 0,
-  "forks": 0,
-  "pushed_at": "2026-07-09T10:52:40Z"
- },
- "cricket-iq-coach": {
-  "description": "Cricket IQ Coach \u2014 Analytics dashboard and coaching tool for cricket academies and teams. Track sessions, players, drills, and performance with Supabase + Next.js. Built for VIT-AP Prompt to Production.",
-  "language": "TypeScript",
-  "stars": 1,
-  "forks": 0,
-  "pushed_at": "2026-07-14T13:39:52Z"
- },
- "CricSense": {
-  "description": "A deep learning project that automatically generates narrative summaries of cricket matches from ball-by-ball data using transformer models.",
-  "language": "Python",
-  "stars": 0,
-  "forks": 0,
-  "pushed_at": "2025-11-18T07:10:51Z"
- },
- "SmartML": {
-  "description": "SmartML is an end-to-end AutoML platform that turns raw CSV/Excel/JSON files into trained, benchmarked machine learning models without any code. It features a visual cleaning studio, automated model ranking, AI-powered dataset insights, and deployable exports.",
-  "language": "JavaScript",
-  "stars": 0,
-  "forks": 0,
-  "pushed_at": "2026-10-21T10:52:46Z"
- }
+    "PVIntelligence":  {
+                           "description":  "An AI-driven solar forecasting platform that leverages time-series forecasting (LSTM/GRU), transfer learning, and Explainable AI (SHAP) to accurately predict photovoltaic generation for new solar sites with limited historical data.",
+                           "language":  "Jupyter Notebook",
+                           "stars":  0,
+                           "forks":  0,
+                           "pushed_at":  "2026-11-09T17:37:03Z"
+                       },
+    "SmartML":  {
+                    "description":  "SmartML is an end-to-end AutoML platform that turns raw CSV/Excel/JSON files into trained, benchmarked machine learning models without any code. It features a visual cleaning studio, automated model ranking, AI-powered dataset insights, and deployable exports.",
+                    "language":  "JavaScript",
+                    "stars":  0,
+                    "forks":  0,
+                    "pushed_at":  "2026-10-21T10:52:46Z"
+                },
+    "LeakFinder":  {
+                       "description":  "LeakFinder — Executive decision-support platform built for Datathon 2026 (Track 4: The Money Leak). Uncovers negative-margin pricing, stuck pending orders, ad spend leakage, and stockout risks across 5 enterprise tables with transparent, zero-API NumPy data science.",
+                       "language":  "Python",
+                       "stars":  0,
+                       "forks":  0,
+                       "pushed_at":  "2026-10-16T09:46:36Z"
+                   },
+    "FactGuard-GenAI":  {
+                            "description":  "An automated multi-agent fact-checking framework implementing DeepMind\u0027s SAFE (Search-Augmented Factuality Evaluator) architecture to detect and mitigate LLM hallucinations at the atomic claim level.",
+                            "language":  "Python",
+                            "stars":  0,
+                            "forks":  0,
+                            "pushed_at":  "2026-08-29T17:06:53Z"
+                        }
 }

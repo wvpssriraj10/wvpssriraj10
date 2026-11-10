@@ -404,8 +404,13 @@ def card_hero():
     c.add(c.live(anim, still) if not STATIC else still)
 
     ty = y2 + 50
-    for i, line in enumerate(wrap("body", CFG["tagline"], 18, 500, 2)):
-        c.text(48, ty + i * 26, line, "body", 18, T["body"], kind="rise", t=0.55 + i * 0.12)
+    tagline_size = 18
+    tagline_lines = wrap("body", CFG["tagline"], tagline_size, 500, 10)
+    while len(tagline_lines) > 2 and tagline_size > 12:
+        tagline_size -= 0.5
+        tagline_lines = wrap("body", CFG["tagline"], tagline_size, 500, 10)
+    for i, line in enumerate(tagline_lines):
+        c.text(48, ty + i * 26, line, "body", tagline_size, T["body"], kind="rise", t=0.55 + i * 0.12)
 
     py = H - GAP - 56
     st = CFG["status"]
