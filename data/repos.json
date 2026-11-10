@@ -1,1 +1,30 @@
-{}
+{
+ "ipl-auction-player-study": {
+  "description": "Data-driven cricket analytics dashboard decoding the gap between IPL auction prices and on-field reality using 16+ years of ball-by-ball data to calculate objective player ROI.",
+  "language": "JavaScript",
+  "stars": 0,
+  "forks": 0,
+  "pushed_at": "2026-07-09T10:52:40Z"
+ },
+ "cricket-iq-coach": {
+  "description": "Cricket IQ Coach \u2014 Analytics dashboard and coaching tool for cricket academies and teams. Track sessions, players, drills, and performance with Supabase + Next.js. Built for VIT-AP Prompt to Production.",
+  "language": "TypeScript",
+  "stars": 1,
+  "forks": 0,
+  "pushed_at": "2026-07-14T13:39:52Z"
+ },
+ "CricSense": {
+  "description": "A deep learning project that automatically generates narrative summaries of cricket matches from ball-by-ball data using transformer models.",
+  "language": "Python",
+  "stars": 0,
+  "forks": 0,
+  "pushed_at": "2025-11-18T07:10:51Z"
+ },
+ "SmartML": {
+  "description": "SmartML is an end-to-end AutoML platform that turns raw CSV/Excel/JSON files into trained, benchmarked machine learning models without any code. It features a visual cleaning studio, automated model ranking, AI-powered dataset insights, and deployable exports.",
+  "language": "JavaScript",
+  "stars": 0,
+  "forks": 0,
+  "pushed_at": "2026-10-21T10:52:46Z"
+ }
+}
