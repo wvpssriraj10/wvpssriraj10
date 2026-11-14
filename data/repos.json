@@ -4,7 +4,7 @@
   "language": "Jupyter Notebook",
   "stars": 0,
   "forks": 0,
-  "pushed_at": "2026-11-09T17:37:03Z"
+  "pushed_at": "2026-11-13T17:15:41Z"
  },
  "SmartML": {
   "description": "SmartML is an end-to-end AutoML platform that turns raw CSV/Excel/JSON files into trained, benchmarked machine learning models without any code. It features a visual cleaning studio, automated model ranking, AI-powered dataset insights, and deployable exports.",
